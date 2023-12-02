@@ -1,0 +1,4 @@
+Type,Identifier,Enabled
+SemanticDir,ChatCompletionPlugin,true
+Class,SKHelper.Lib.Plugins.Weather.WeatherPlugin,true
+Class,SKHelper.Lib.Plugins.WebSearchPlugin.BingSearch,true

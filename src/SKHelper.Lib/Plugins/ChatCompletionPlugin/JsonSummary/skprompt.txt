@@ -1,0 +1,2 @@
+﻿Summarize the Json in a readable way:
+{{$input}}
