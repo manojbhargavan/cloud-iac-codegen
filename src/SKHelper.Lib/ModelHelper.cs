@@ -40,6 +40,9 @@ namespace SKHelper.Lib
                     case KernalUsage.TextEmbedding:
                         model = "text-embedding-ada-002";
                         break;
+                    case KernalUsage.ChatCompletion32k:
+                        model = "gpt-4-32k";
+                        break;
                 }
             }
 

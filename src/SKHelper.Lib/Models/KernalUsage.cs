@@ -10,8 +10,9 @@ namespace SKHelper.Lib.Models
     {
         ChatCompletionFast,
         ChatCompletion,
+        ChatCompletion32k,
         TextCompletionFast,
         TextCompletion,        
-        TextEmbedding
+        TextEmbedding        
     }
 }

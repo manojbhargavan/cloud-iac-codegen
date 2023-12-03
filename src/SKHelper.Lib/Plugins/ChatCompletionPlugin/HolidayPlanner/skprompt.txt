@@ -1,0 +1,4 @@
+Bot: Where are you going for a vacation?
+User: {{$input}}
+---------------------------------------------
+If the user intents to go on a holiday/vacation/trip then create a comprehensive plan with major attractions and day wise plan:

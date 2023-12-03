@@ -50,45 +50,42 @@ namespace SKHelper.Lib.Plugins.WebSearchPlugin
             _baseUri = "https://api.bing.microsoft.com/v7.0/search";
         }
 
-        [SKFunction, Description("Search the web using Bing")]
-        public async Task<string> Search([Description("Search string")]string searchString)
+        [SKFunction, Description("Search the web using Bing for webpages and save to disk as html, returns the full file paths of files saved to disk seperated by |")]
+        public async Task<string> Search([Description("Search string")] string searchString,
+            [Description("Full Directory Path to download webpage to")] string directoryToSaveHtml,
+            [Description("Number of search results to return")] int resultCount)
         {
             try
             {
                 // Remember to encode query parameters like q, responseFilters, promote, etc.
 
-                //var queryString = QUERY_PARAMETER + Uri.EscapeDataString(searchString) 
-                //    + Uri.EscapeDataString("+site%3Aregistry.terraform.io/providers/hashicorp/azurerm/latest/docs");
-                var queryString = QUERY_PARAMETER + Uri.EscapeDataString("azurerm+databricks+workspace+site:registry.terraform.io/providers/hashicorp/azurerm/latest/docs");
+                var queryString = QUERY_PARAMETER + Uri.EscapeDataString(searchString);
                 queryString += MKT_PARAMETER + "en-us";
                 queryString += RESPONSE_FILTER_PARAMETER + Uri.EscapeDataString("webpages");
                 queryString += TEXT_DECORATIONS_PARAMETER + Boolean.FalseString;
-                queryString += COUNT_PARAMETER + "10";
+                queryString += COUNT_PARAMETER + $"{resultCount}";
 
                 HttpResponseMessage response = await MakeRequestAsync(queryString);
                 var contentString = await response.Content.ReadAsStringAsync();
                 var searchResponse = JsonConvert.DeserializeObject<BinSearchResults>(contentString);
 
+                List<string> results = new List<string>();
                 if (response.IsSuccessStatusCode)
                 {
-                    StringBuilder resultPageContent = new("");
-                    resultPageContent.Append($"Bing Search Results for: {searchString}\n\n");
                     var client = new HttpClient();
-                    int resultCount = 1;
                     foreach (var result in searchResponse!.WebPages.Value)
                     {
                         var pageUri = result.Url;
                         var doc = GetPageContents(pageUri.ToString());
-
-                        resultPageContent.Append($"Result {resultCount++}:\n");
-                        resultPageContent.Append($"Title: {doc.ParsedText}\n");
-                        resultCount++;
+                        string fileName = Path.Combine(directoryToSaveHtml, $"{Guid.NewGuid().ToString().Replace("-", "")}.html");
+                        doc.Save(fileName);
+                        results.Add(fileName);
                     }
-                    return resultPageContent.ToString();
+                    return string.Join("|", results);
                 }
                 else
                 {
-                    return "No response from Bing Search.";
+                    return "";
                 }
             }
             catch (Exception)
